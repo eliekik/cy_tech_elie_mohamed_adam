@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include "map.h"
 
 void init_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
@@ -22,10 +24,41 @@ void init_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
 }
 
 void afficher_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
+    printf("\n");
     for (int y = 0; y < MAP_SIZE; y++) {
+
+        printf("              ");
+
         for (int x = 0; x < MAP_SIZE; x++) {
             printf("%c ", Lab[y][x]);
         }
         printf("\n"); 
+    }
+}
+void init_carte_cachee(char Lab_cache[MAP_SIZE][MAP_SIZE]) {
+    // 25 éléments (4 Basilics, 4 Zombies, 4 Harpies, 4 Trolls = 16 monstres)
+    // A = Armes antiques, C = Coffres, P = Portail, K = Totems (K pour transmutation)
+    char elements[25] = {
+        'B','B','B','B', 'Z','Z','Z','Z',
+        'H','H','H','H', 'T','T','T','T',
+        'A','A','A','A', 'C','C', 'P', 'K','K'
+    };
+
+    // Mélange aléatoire complet de la liste
+    srand(time(NULL));
+    for (int i = 24; i > 0; i--) {
+        int j = rand() % (i + 1);
+        char temp = elements[i];
+        elements[i] = elements[j];
+        elements[j] = temp;
+    }
+
+    // Remplissage des cases de 1 à 5 (l'intérieur des murs)
+    int index = 0;
+    for (int y = 1; y < MAP_SIZE - 1; y++) {
+        for (int x = 1; x < MAP_SIZE - 1; x++) {
+            Lab_cache[y][x] = elements[index];
+            index++;
+        }
     }
 }
