@@ -2,20 +2,21 @@
 #include "player.h"
 
 void movement_keys() {
+    printf("                                                                                        ");
     printf("      1:^ \n");
+    printf("                                                                                        ");
     printf(" 2:<   3:v   4:> \n");
 }
 
 void choisir_arme(char *arme) {
     int choix;
 
-    printf("\n--- WEAPON CHOICE ---\n");
-    printf("1. Shield (against Basilic)\n");
-    printf("2. Torch (against Zombie)\n");
-    printf("3. Long Bow (against Harpie)\n");
-    printf("4. Stone Axe (against Troll)\n");
+    printf("\n                                                                                        --- WEAPON CHOICE ---\n");
+    printf("                                                                                        1. Shield (against Basilic)\n");
+    printf("                                                                                        2. Torch (against Zombie)\n");
+    printf("                                                                                        3. Long Bow (against Harpie)\n");
+    printf("                                                                                        4. Stone Axe (against Troll)\n\n");
     printf("Choose your weapon (1-4) : ");
-    printf("\n\n");
 
     if (scanf("%d", &choix) != 1) {
         scanf("%*s"); // Nettoyage propre sans variable
@@ -35,34 +36,61 @@ void choisir_arme(char *arme) {
             return; // Changé de break à return pour sécuriser la récursivité
     }
 }
-
 void avancement(player *p, char Lab[MAP_SIZE][MAP_SIZE]) {
     int movement;
     int futur_x = p->x;
     int futur_y = p->y;
 
-    printf("Advance to a case \n");
-    movement_keys();
+    // --- LOGIQUE DU PORTAIL MAGIQUE ---
+    if (p->a_portail == 1) {
+        printf("\n[MAGIC PORTAL] Choose ANY hidden case ('#') to teleport to!\n");
 
-    if (scanf("%d", &movement) != 1) {
-        scanf("%*s");
-        printf("\n[ERROR] Please enter a valid number!\n\n");
-        avancement(p, Lab);
-        return;
+        // ON AFFICHE LE PLAN ICI
+        afficher_guide_coordonnees();
+
+        printf("Enter the column (X: 1-5) and row (Y: 1-5) separated by a space : ");
+        
+        if (scanf("%d %d", &futur_x, &futur_y) != 2) {
+            scanf("%*s");
+            printf("Invalid input.\n");
+            avancement(p, Lab);
+            return;
+        }
+        p->a_portail = 0; // Le pouvoir est consommé !
+        // On vide tout ce que le joueur a pu taper en trop (espaces, autres chiffres...)
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+        p->a_portail = 0;
+    } 
+    else {
+        // --- LOGIQUE DE DÉPLACEMENT NORMALE ---
+        printf("                                                                                        Advance to a case \n");
+        movement_keys();
+
+        if (scanf("%d", &movement) != 1) {
+            scanf("%*s");
+            printf("\n[ERROR] Please enter a valid number!\n\n");
+            avancement(p, Lab);
+            return;
+        }
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+        
+        // 1. Calcul de la future position (DOIT ETRE DANS LE ELSE !)
+        switch (movement) {
+            case 1: futur_y--; break; // Haut
+            case 2: futur_x--; break; // Gauche
+            case 3: futur_y++; break; // Bas
+            case 4: futur_x++; break; // Droite
+            default: printf("Invalid choice.\n"); avancement(p, Lab); return;
+        }
     }
-    // 1. Calcul de la future position
-    switch (movement) {
-        case 1: futur_y--; break; // Haut
-        case 2: futur_x--; break; // Gauche
-        case 3: futur_y++; break; // Bas
-        case 4: futur_x++; break; // Droite
-        default: printf("Invalid choice.\n"); avancement(p, Lab); return;
-    }
+    
     // VERIFICATION DES LIMITES ET DES MURS
     if (futur_x < 0 || futur_x >= MAP_SIZE || futur_y < 0 || futur_y >= MAP_SIZE) {
         printf("\n[Border] You cannot leave the map area!\n\n");
         avancement(p, Lab); 
-        return; // Ajout obligatoire ici aussi
+        return; 
     } 
       
     char cible = Lab[futur_y][futur_x];
@@ -82,15 +110,39 @@ void avancement(player *p, char Lab[MAP_SIZE][MAP_SIZE]) {
     }
 
     // 3. MISE À JOUR VISUELLE (La gommette)
-    // A. On redessine le décor d'origine là où le joueur se trouvait
     Lab[p->y][p->x] = p->case_sous_joueur;
-
-    // B. On valide les nouvelles coordonnées du joueur
     p->x = futur_x;
     p->y = futur_y;    
-    // C. On sauvegarde le décor de la NOUVELLE case avant de marcher dessus
     p->case_sous_joueur = Lab[p->y][p->x];
-
-    // D. On dessine le joueur sur sa nouvelle case
     Lab[p->y][p->x] = p->icone;    
+}
+int verifier_etouffement(player *p, int id_joueur, char labyrinthe[MAP_SIZE][MAP_SIZE]) {
+    int cases_cachees = 0;
+    
+    // On vérifie les 4 cases autour
+    if (labyrinthe[p->y - 1][p->x] == '#' && p->monstres_vaincus[p->y - 1][p->x] == 0) cases_cachees++; 
+    if (labyrinthe[p->y + 1][p->x] == '#' && p->monstres_vaincus[p->y + 1][p->x] == 0) cases_cachees++; 
+    if (labyrinthe[p->y][p->x - 1] == '#' && p->monstres_vaincus[p->y][p->x - 1] == 0) cases_cachees++; 
+    if (labyrinthe[p->y][p->x + 1] == '#' && p->monstres_vaincus[p->y][p->x + 1] == 0) cases_cachees++; 
+    
+    // Si on est à l'intérieur du labyrinthe ET qu'il n'y a plus de '#' inexplorés autour
+    if (p->case_sous_joueur != '-' && p->case_sous_joueur != '|' && cases_cachees == 0) {
+        printf("\n[BLOCKED] There are no hidden cases around you! You are teleported back to the start.\n");
+        
+        // 1. On efface le joueur de sa position actuelle
+        labyrinthe[p->y][p->x] = p->case_sous_joueur;
+        
+        // 2. On réinitialise ses coordonnées à sa case de départ selon son rôle
+        if (id_joueur == 0)      { p->x = 3; p->y = 0; p->case_sous_joueur = '-'; }
+        else if (id_joueur == 1) { p->x = 6; p->y = 3; p->case_sous_joueur = '|'; }
+        else if (id_joueur == 2) { p->x = 3; p->y = 6; p->case_sous_joueur = '-'; }
+        else if (id_joueur == 3) { p->x = 0; p->y = 3; p->case_sous_joueur = '|'; }
+        
+        // 3. On redessine le joueur sur sa case de départ
+        labyrinthe[p->y][p->x] = p->icone;
+        
+        return 1; // 1 = Le joueur est bloqué
+    }
+    
+    return 0; // 0 = Le joueur n'est pas bloqué, tout va bien
 }

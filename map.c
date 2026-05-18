@@ -23,14 +23,19 @@ void init_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
     Lab[MAP_SIZE - 1][MAP_SIZE - 1] = '+';
 }
 
-void afficher_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
+void afficher_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE], int memoire[MAP_SIZE][MAP_SIZE]) {
     printf("\n");
     for (int y = 0; y < MAP_SIZE; y++) {
 
-        printf("              ");
+        printf("                                            ");
 
         for (int x = 0; x < MAP_SIZE; x++) {
-            printf("%c ", Lab[y][x]);
+            if (Lab[y][x] == '#' && memoire[y][x] == 1) {
+                printf("  "); 
+            } 
+            else {
+                printf("%c ", Lab[y][x]);
+            }
         }
         printf("\n"); 
     }
@@ -41,7 +46,7 @@ void init_carte_cachee(char Lab_cache[MAP_SIZE][MAP_SIZE]) {
     char elements[25] = {
         'B','B','B','B', 'Z','Z','Z','Z',
         'H','H','H','H', 'T','T','T','T',
-        'A','A','A','A', 'C','C', 'P', 'K','K'
+        'E','L','G','D', 'C','C', 'P', 'K','K'
     };
 
     // Mélange aléatoire complet de la liste
@@ -61,4 +66,16 @@ void init_carte_cachee(char Lab_cache[MAP_SIZE][MAP_SIZE]) {
             index++;
         }
     }
+}
+void afficher_guide_coordonnees() {
+    printf("\n              --- COORDINATES GUIDE ---\n");
+    printf("                 X (Columns: 1 to 5)  \n");
+    printf("                  1 2 3 4 5 \n");
+    printf("                + - - - - - +\n");
+    printf("              1 | # # # # # |\n");
+    printf("           Y  2 | # # # # # |\n");
+    printf("         (Row)3 | # # # # # |\n");
+    printf("              4 | # # # # # |\n");
+    printf("              5 | # # # # # |\n");
+    printf("                + - - - - - +\n\n");
 }
