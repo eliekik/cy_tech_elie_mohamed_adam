@@ -25,5 +25,6 @@ void movement_keys();
 void avancement(player *p, char Lab[MAP_SIZE][MAP_SIZE]);
 void choisir_arme(char *arme);
 int verifier_etouffement(player *p, int id_joueur, char labyrinthe[MAP_SIZE][MAP_SIZE]);
+void afficher_nom_arme(char code);
 
 #endif

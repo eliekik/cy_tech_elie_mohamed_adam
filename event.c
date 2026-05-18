@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "player.h"
 #include "event.h"
 #include "map.h"
 
@@ -87,17 +88,25 @@ int declencher_evenement(player *p, int id_joueur, char carte_cachee[MAP_SIZE][M
         else if (case_actuelle == 'E' || case_actuelle == 'L' || case_actuelle == 'G' || case_actuelle == 'D') {
             
             if (case_actuelle == p->arme_recherchee) {
-                printf("EPIC SUCCESS!                                       You found your Legendary Weapon!\n");
-                p->a_trouve_arme = 1; // Il la met dans sa poche !
-                victoire = 1; // Tu peux rajouter des points de score ici plus tard !
+                // On coupe le texte en deux pour insérer le nom de l'arme
+                printf("              EPIC SUCCESS! You found your [");
+                afficher_nom_arme(case_actuelle);
+                printf("]!\n");
+                
+                p->a_trouve_arme = 1; 
+                victoire = 1; 
+                
                 // VERIFICATION VICTOIRE TOTALE
                 if (p->a_trouve_tresor == 1) {
                     return 2; // 2 = VICTOIRE DU JEU !
                 }
             } 
             else {
-                printf("You found a Legendary weapon               ... It's not yours keep looking\n");
-                printf(">>> SUCCESS!                                  ... You live.\n");
+                // Pareil ici, on coupe le texte
+                printf("              You found the [");
+                afficher_nom_arme(case_actuelle);
+                printf("]... It's not yours, keep looking.\n");
+                
                 victoire = 1;
             }
         }

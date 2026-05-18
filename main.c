@@ -116,7 +116,9 @@ int main() {
                 // 3. SEULEMENT si la case sous lui est un '#' et qu'elle n'est pas dans sa mémoire
                 if (joueurs[i].case_sous_joueur == '#' && joueurs[i].monstres_vaincus[joueurs[i].y][joueurs[i].x] == 0) {
                     choisir_arme(&joueurs[i].arme_active);
-                    printf("Equipped arm: %c\n", joueurs[i].arme_active);
+                    printf("              Equipped arm: [");
+                    afficher_nom_arme(joueurs[i].arme_active); // La fonction va écrire "Shield" ici
+                    printf("]\n");
                 }
                
                 // 4. On récupère le résultat de l'événement (0=mort, 1=vivant, 2=VICTOIRE)

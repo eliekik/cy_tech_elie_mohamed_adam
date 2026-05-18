@@ -23,26 +23,9 @@ void init_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE]) {
     Lab[MAP_SIZE - 1][MAP_SIZE - 1] = '+';
 }
 
-void afficher_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE], int memoire[MAP_SIZE][MAP_SIZE]) {
-    printf("\n");
-    for (int y = 0; y < MAP_SIZE; y++) {
-
-        printf("                                            ");
-
-        for (int x = 0; x < MAP_SIZE; x++) {
-            if (Lab[y][x] == '#' && memoire[y][x] == 1) {
-                printf("  "); 
-            } 
-            else {
-                printf("%c ", Lab[y][x]);
-            }
-        }
-        printf("\n"); 
-    }
-}
 void init_carte_cachee(char Lab_cache[MAP_SIZE][MAP_SIZE]) {
     // 25 éléments (4 Basilics, 4 Zombies, 4 Harpies, 4 Trolls = 16 monstres)
-    // A = Armes antiques, C = Coffres, P = Portail, K = Totems (K pour transmutation)
+    // Epée,L,G,D = Armes antiques, C = Coffres, P = Portail, K = Totems (K pour transmutation)
     char elements[25] = {
         'B','B','B','B', 'Z','Z','Z','Z',
         'H','H','H','H', 'T','T','T','T',
@@ -67,6 +50,25 @@ void init_carte_cachee(char Lab_cache[MAP_SIZE][MAP_SIZE]) {
         }
     }
 }
+
+void afficher_labyrinthe(char Lab[MAP_SIZE][MAP_SIZE], int memoire[MAP_SIZE][MAP_SIZE]) {
+    printf("\n");
+    for (int y = 0; y < MAP_SIZE; y++) {
+
+        printf("                                            ");
+
+        for (int x = 0; x < MAP_SIZE; x++) {
+            if (Lab[y][x] == '#' && memoire[y][x] == 1) {
+                printf("  "); 
+            } 
+            else {
+                printf("%c ", Lab[y][x]);
+            }
+        }
+        printf("\n"); 
+    }
+}
+
 void afficher_guide_coordonnees() {
     printf("\n              --- COORDINATES GUIDE ---\n");
     printf("                 X (Columns: 1 to 5)  \n");

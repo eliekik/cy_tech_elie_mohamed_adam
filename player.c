@@ -36,6 +36,19 @@ void choisir_arme(char *arme) {
             return; // Changé de break à return pour sécuriser la récursivité
     }
 }
+void afficher_nom_arme(char code) {
+    switch (code) {
+        case 'S': printf("Shield"); break;
+        case 'T': printf("Torch"); break;
+        case 'B': printf("Long Bow"); break;
+        case 'A': printf("Stone Axe"); break;
+        case 'E': printf("Epic Sword"); break;
+        case 'L': printf("Lunar Crossbow"); break;
+        case 'G': printf("Forbidden Grimoire"); break;
+        case 'D': printf("Shadow Dagger"); break;
+        default:  printf("Unknown Weapon"); break;
+    }
+}
 void avancement(player *p, char Lab[MAP_SIZE][MAP_SIZE]) {
     int movement;
     int futur_x = p->x;
